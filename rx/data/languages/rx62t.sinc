@@ -567,6 +567,10 @@ popregs: is popr15 & popr14 & popr13 & popr12 & popr11 & popr10 & popr9 & popr8 
 }
 
 # AND
+:AND reg4_4, reg0_4    is op2_6 = 0b010100 & ld0_2 = 0b11; reg4_4 & reg0_4  {
+    reg0_4 = reg0_4 & reg4_4;
+    setResultFlags(reg0_4);
+}
 ## AND #UIMM:4, dest
 :AND "#"^uimm4_4, reg0_4 is op0_8 = 0x64; uimm4_4 & reg0_4 {
 	reg0_4 = reg0_4 & uimm4_4;
@@ -857,7 +861,13 @@ popregs: is popr15 & popr14 & popr13 & popr12 & popr11 & popr10 & popr9 & popr8 
 	local tmp:4 = reg0_4 - liop;
 	setResultFlags(tmp);
 }
-
+## CMP Rs, Rs2
+:CMP reg4_4, reg0_4    is op2_6 = 0b10001 & ld0_2 = 0b11; reg0_4 & reg4_4 {
+	setSubtractFlags(reg0_4, reg4_4);
+	setSubtractOverflowFlags(reg0_4, reg4_4);
+	local tmp:4 = reg0_4 - reg4_4;
+	setResultFlags(tmp);
+}
 ## CMP dsp[Rs].memex, Rs2
 ## memex = UB or src == Rs
 :CMP ld_src, reg0_4    is op2_6 = 0b10001 & ld0_2; reg0_4 ... & ld_src [ mode_ld = ld0_2; mode_mi = 4; ] {
@@ -1528,6 +1538,12 @@ popregs: is popr15 & popr14 & popr13 & popr12 & popr11 & popr10 & popr9 & popr8 
 
 
 ## OR
+### OR Rs, Rd
+:OR reg4_4, reg0_4    is op2_6 = 0b10101 & ld0_2 = 0b11; reg4_4 & reg0_4  {
+    reg0_4 = reg0_4 | reg4_4;
+    setResultFlags(reg0_4);
+}
+
 ### (1) OR #UIMM:4, Rd
 :OR "#"^uimm4_4, reg0_4    is op0_8 = 0x65; uimm4_4 & reg0_4 {
     reg0_4 = reg0_4 | uimm4_4;
@@ -2110,6 +2126,14 @@ popregs: is popr15 & popr14 & popr13 & popr12 & popr11 & popr10 & popr9 & popr8 
     setSubtractOverflowFlags(reg0_4, uimm4_4);
     setSubtractFlags(reg0_4, uimm4_4);
     reg0_4 = reg0_4 - zext(uimm4_4:1);
+    setResultFlags(reg0_4);
+}
+
+### SUB Rs, Rd
+:SUB reg4_4, reg0_4    is op2_6 = 0b10000 & ld0_2 = 0b11; reg0_4 & reg4_4 {
+    setSubtractOverflowFlags(reg0_4, reg4_4);
+    setSubtractFlags(reg0_4, reg4_4);
+    reg0_4 = reg0_4 - reg4_4;
     setResultFlags(reg0_4);
 }
 
